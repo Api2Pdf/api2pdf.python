@@ -2,18 +2,22 @@
 [Api2Pdf.com](https://www.api2pdf.com) | [Docs](https://www.api2pdf.com/documentation) 
 
 ## What is Api2Pdf?
-Api2Pdf.com is a service for instantly generating PDFs from:
-- HTML
-- URLs
-- Microsoft Office documents (Word, Excel, Powerpoint)
-- Images
-- Merge / Concatenate two or more PDFs
+Api2Pdf.com is a service for instantly generating PDFs.
+
+- [Get Started](#get-started)
+- [HTML](#convert-from-html)
+- [URLs](#convert-from-urls)
+- [Microsoft Office documents (Word, Excel, Powerpoint)](#convert-from-office)
+- [Images](#convert-from-office)
+- [Merge / Concatenate two or more PDFs](#merge)
+- [Helper Methods](#helper-methods)
+- [FAQ](#faq)
 
 Api2Pdf provides access to **wkhtmltopdf**, **Headless Chrome**, and **LibreOffice**, along with the ability merge / concatenate PDFs together.
 
 
 
-## Get Started
+## <a name="get-started"></a>Get Started
 This python library provides convenient methods for accessing the REST API [documented here](https://www.api2pdf.com/documentation/).
 
 ### Acquire API Key
@@ -65,7 +69,7 @@ Output:
     
 ## Documentation
 
-### Convert HTML to PDF
+### <a name="convert-from-html"></a>Convert HTML to PDF
 
 We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to convert raw html to PDFs. Both endpoints allow you to pass keyword arguments that are options available for their respective libraries.
 
@@ -83,7 +87,7 @@ We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to con
     wkhtmltopdf_result = a2p.WkHtmlToPdf.convert_from_html('<p>Hello World</p>')
     print(wkhtmltopdf_result.result)
     
-### Convert URL to PDF
+### <a name="convert-from-url"></a>Convert URL to PDF
 
 We support both wkhtmltopdf and Headless Chrome with the endpoint to convert urls to PDFs. Both endpoints allow you to pass keyword arguments that are options available for their respective libraries.
 
@@ -102,7 +106,7 @@ We support both wkhtmltopdf and Headless Chrome with the endpoint to convert url
     wkhtmltopdf_result = a2p.WkHtmlToPdf.convert_from_url('https://LINK-TO-YOUR-WEBSITE')
     print(wkhtmltopdf_result.result)
     
-### Convert Microsoft Office Documents and Images to PDF
+### <a name="convert-from-office"></a>Convert Microsoft Office Documents and Images to PDF
 
 We use **LibreOffice** to convert the following formats to PDF:
 
@@ -118,7 +122,7 @@ You must provide a url to the file. Our engine will consume the file at that URL
     libreoffice_result = a2p.LibreOffice.convert_from_html('https://LINK-TO-YOUR-FILE')
     print(libreoffice_result.result)
     
-### Merge / Concatenate Two or More PDFs
+### <a name="merge"></a>Merge / Concatenate Two or More PDFs
 
 To use the merge endpoint, supply a list of urls to existing PDFs. The engine will consume all of the PDFs and merge them into a single PDF, in the order in which they were provided in the list.
 
@@ -132,7 +136,7 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
     merge_result = a2p.merge(links_to_pdfs)
     print(merge_result.result)
     
-### Helper Methods
+### <a name="helper-methods"></a>Helper Methods
 
 ##### Api2PdfResponse: download_pdf()
 
@@ -148,7 +152,7 @@ On any `Api2PdfResponse` that succesfully generated a pdf, you can use the handy
     pdf_as_file_object = merge_result.download_pdf()
     
     
-## FAQ
+## <a name="faq"></a>FAQ
 
 #### How do you bill?
 $1 will be deducted from your balance every month as long as you maintain an active account. This charge begins 30 days after your first sign up for the service. In addition, we charge $0.001 per megabyte (data in + data out). We require customers to maintain a positive balance on their account to use the service. You can turn off auto-recharge at any time and let your funds run out if you no longer wish to use the service. See our [pricing calculator](https://www.api2pdf.com/pricing/).
