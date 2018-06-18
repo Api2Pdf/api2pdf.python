@@ -13,7 +13,7 @@ Api2Pdf.com is a service for instantly generating PDFs.
 - [Helper Methods](#helper-methods)
 - [FAQ](#faq)
 
-Api2Pdf provides access to **wkhtmltopdf**, **Headless Chrome**, and **LibreOffice**, along with the ability merge / concatenate PDFs together.
+Api2Pdf provides access to **wkhtmltopdf**, **Headless Chrome**, and **LibreOffice**, along with the ability to merge / concatenate PDFs together.
 
 
 
@@ -32,7 +32,7 @@ This python library provides convenient methods for accessing the REST API [docu
 
     from api2pdf import Api2Pdf
     
-    a2p = Api2PDF('YOUR-API-KEY')
+    a2p = Api2Pdf('YOUR-API-KEY')
     api_response = a2p.HeadlessChrome.convert_from_html('<p>Hello, World</p>')
     print(api_response.result)
     
@@ -73,11 +73,14 @@ Output:
 
 We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to convert raw html to PDFs. Both endpoints allow you to pass keyword arguments that are options available for their respective libraries.
 
+- [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
+- [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
+
 ##### HeadlessChrome.convert_from_html(html, **options)
 ##### WkHtmlToPdf.convert_from_html(html, **options)
 
     from api2pdf import Api2Pdf
-    a2p = Api2PDF('YOUR-API-KEY')
+    a2p = Api2Pdf('YOUR-API-KEY')
     
     # headless chrome
     headless_chrome_result = a2p.HeadlessChrome.convert_from_html('<p>Hello World</p>')
@@ -91,12 +94,15 @@ We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to con
 
 We support both wkhtmltopdf and Headless Chrome with the endpoint to convert urls to PDFs. Both endpoints allow you to pass keyword arguments that are options available for their respective libraries.
 
+- [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
+- [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
+
 ##### HeadlessChrome.convert_from_url(url, **options)
 
 ##### WkHtmlToPdf.convert_from_url(url, **options)
 
     from api2pdf import Api2Pdf
-    a2p = Api2PDF('YOUR-API-KEY')
+    a2p = Api2Pdf('YOUR-API-KEY')
     
     # headless chrome
     headless_chrome_result = a2p.HeadlessChrome.convert_from_url('https://LINK-TO-YOUR-WEBSITE')
@@ -117,7 +123,7 @@ You must provide a url to the file. Our engine will consume the file at that URL
 ##### LibreOffice.convert_from_url(url)
 
     from api2pdf import Api2Pdf
-    a2p = Api2PDF('YOUR-API-KEY')
+    a2p = Api2Pdf('YOUR-API-KEY')
     
     libreoffice_result = a2p.LibreOffice.convert_from_html('https://LINK-TO-YOUR-FILE')
     print(libreoffice_result.result)
@@ -129,7 +135,7 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
 ##### merge(list_of_urls)
     
     from api2pdf import Api2Pdf
-    a2p = Api2PDF('YOUR-API-KEY')
+    a2p = Api2Pdf('YOUR-API-KEY')
     
     # merge pdfs
     links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
@@ -143,7 +149,7 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
 On any `Api2PdfResponse` that succesfully generated a pdf, you can use the handy download_pdf() method to download the pdf to a file-like object which you can then save to your local cache. If the pdf generation was unsuccessful, it will throw a FileNotFoundException.
 
     from api2pdf import Api2Pdf
-    a2p = Api2PDF('YOUR-API-KEY')
+    a2p = Api2Pdf('YOUR-API-KEY')
     
     # merge pdfs
     links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
