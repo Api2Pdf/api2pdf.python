@@ -109,8 +109,8 @@ class Api2PdfResponse(object):
     def download_pdf(self):
         USERAGENT = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
         if self.result['success']:
-            downloaded_pdf = requests.get(pdf_response['pdf'], headers=USERAGENT)
-            data = download_response.content
+            downloaded_pdf = requests.get(self.result['pdf'], headers=USERAGENT)
+            data = downloaded_pdf.content
             return data
         else:
             raise FileNotFoundError("PDF never generated " + self.result['error'])
