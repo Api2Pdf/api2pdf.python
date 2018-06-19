@@ -73,11 +73,23 @@ Output:
 
 We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to convert raw html to PDFs. Both endpoints allow you to pass keyword arguments that are options available for their respective libraries.
 
+##### HeadlessChrome.convert_from_html(html, inline_pdf=False, file_name=None, **options)
+##### WkHtmlToPdf.convert_from_html(html, inline_pdf=False, file_name=None, **options)
+
+*Parameters:*
+
+`html <string>` - raw string of html content
+
+`inline_pdf <bool> (optional, default=False)` - if set to True, web browser will load the PDF in a new tab.
+
+`file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
+
+`**options <keyword args> (optional, default=None)` - include options for generating a PDF with your chosen library. See available options here:
+
 - [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
 - [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
 
-##### HeadlessChrome.convert_from_html(html, inline_pdf=True, file_name=None, **options)
-##### WkHtmlToPdf.convert_from_html(html, inline_pdf=True, file_name=None, **options)
+
 
     from api2pdf import Api2Pdf
     a2p = Api2Pdf('YOUR-API-KEY')
@@ -94,12 +106,24 @@ We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to con
 
 We support both wkhtmltopdf and Headless Chrome with the endpoint to convert urls to PDFs. Both endpoints allow you to pass keyword arguments that are options available for their respective libraries.
 
+##### HeadlessChrome.convert_from_url(url, inline_pdf=False, file_name=None, **options)
+
+##### WkHtmlToPdf.convert_from_url(url, inline_pdf=False, file_name=None, **options)
+
+*Parameters:*
+
+`url <string>` - url to a pdf that Api2Pdf can consume
+
+`inline_pdf <bool> (optional, default=False)` - if set to True, web browser will load the PDF in a new tab.
+
+`file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
+
+`**options <keyword args> (optional, default=None)` - include options for generating a PDF with your chosen library. See available options here:
+
 - [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
 - [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
 
-##### HeadlessChrome.convert_from_url(url, inline_pdf=True, file_name=None, **options)
 
-##### WkHtmlToPdf.convert_from_url(url, inline_pdf=True, file_name=None, **options)
 
     from api2pdf import Api2Pdf
     a2p = Api2Pdf('YOUR-API-KEY')
@@ -120,7 +144,16 @@ We use **LibreOffice** to convert the following formats to PDF:
 
 You must provide a url to the file. Our engine will consume the file at that URL and convert it to the PDF.
 
-##### LibreOffice.convert_from_url(url, inline_pdf=True, file_name=None)
+##### LibreOffice.convert_from_url(url, inline_pdf=False, file_name=None)
+
+*Parameters:*
+
+`url <string>` - url to a file of one of the supported formats above
+
+`inline_pdf <bool> (optional, default=False)` - if set to True, web browser will load the PDF in a new tab.
+
+`file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
+
 
     from api2pdf import Api2Pdf
     a2p = Api2Pdf('YOUR-API-KEY')
@@ -133,6 +166,10 @@ You must provide a url to the file. Our engine will consume the file at that URL
 To use the merge endpoint, supply a list of urls to existing PDFs. The engine will consume all of the PDFs and merge them into a single PDF, in the order in which they were provided in the list.
 
 ##### merge(list_of_urls)
+
+*Paramaters:*
+
+`list_of_urls <list>` - list of urls to pdfs
     
     from api2pdf import Api2Pdf
     a2p = Api2Pdf('YOUR-API-KEY')
