@@ -89,18 +89,18 @@ We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to con
 - [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
 - [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
 
-
-
-    from api2pdf import Api2Pdf
-    a2p = Api2Pdf('YOUR-API-KEY')
+```
+from api2pdf import Api2Pdf
+a2p = Api2Pdf('YOUR-API-KEY')
     
-    # headless chrome
-    headless_chrome_result = a2p.HeadlessChrome.convert_from_html('<p>Hello World</p>')
-    print(headless_chrome_result.result)
+# headless chrome
+headless_chrome_result = a2p.HeadlessChrome.convert_from_html('<p>Hello World</p>')
+print(headless_chrome_result.result)
     
-    # wkhtmltopdf
-    wkhtmltopdf_result = a2p.WkHtmlToPdf.convert_from_html('<p>Hello World</p>')
-    print(wkhtmltopdf_result.result)
+# wkhtmltopdf
+wkhtmltopdf_result = a2p.WkHtmlToPdf.convert_from_html('<p>Hello World</p>')
+print(wkhtmltopdf_result.result)
+```
     
 ### <a name="convert-from-url"></a>Convert URL to PDF
 
@@ -123,18 +123,18 @@ We support both wkhtmltopdf and Headless Chrome with the endpoint to convert url
 - [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
 - [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
 
-
-
-    from api2pdf import Api2Pdf
-    a2p = Api2Pdf('YOUR-API-KEY')
+```
+from api2pdf import Api2Pdf
+a2p = Api2Pdf('YOUR-API-KEY')
     
-    # headless chrome
-    headless_chrome_result = a2p.HeadlessChrome.convert_from_url('https://LINK-TO-YOUR-WEBSITE')
-    print(headless_chrome_result.result)
+# headless chrome
+headless_chrome_result = a2p.HeadlessChrome.convert_from_url('https://LINK-TO-YOUR-WEBSITE')
+print(headless_chrome_result.result)
     
-    # wkhtmltopdf
-    wkhtmltopdf_result = a2p.WkHtmlToPdf.convert_from_url('https://LINK-TO-YOUR-WEBSITE')
-    print(wkhtmltopdf_result.result)
+# wkhtmltopdf
+wkhtmltopdf_result = a2p.WkHtmlToPdf.convert_from_url('https://LINK-TO-YOUR-WEBSITE')
+print(wkhtmltopdf_result.result)
+```
     
 ### <a name="convert-from-office"></a>Convert Microsoft Office Documents and Images to PDF
 
@@ -154,12 +154,13 @@ You must provide a url to the file. Our engine will consume the file at that URL
 
 `file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
 
-
-    from api2pdf import Api2Pdf
-    a2p = Api2Pdf('YOUR-API-KEY')
+```
+from api2pdf import Api2Pdf
+a2p = Api2Pdf('YOUR-API-KEY')
     
-    libreoffice_result = a2p.LibreOffice.convert_from_html('https://LINK-TO-YOUR-FILE')
-    print(libreoffice_result.result)
+libreoffice_result = a2p.LibreOffice.convert_from_html('https://LINK-TO-YOUR-FILE')
+print(libreoffice_result.result)
+```
     
 ### <a name="merge"></a>Merge / Concatenate Two or More PDFs
 
@@ -170,14 +171,16 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
 *Paramaters:*
 
 `list_of_urls <list>` - list of urls to pdfs
+
+```
+from api2pdf import Api2Pdf
+a2p = Api2Pdf('YOUR-API-KEY')
     
-    from api2pdf import Api2Pdf
-    a2p = Api2Pdf('YOUR-API-KEY')
-    
-    # merge pdfs
-    links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
-    merge_result = a2p.merge(links_to_pdfs)
-    print(merge_result.result)
+# merge pdfs
+links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
+merge_result = a2p.merge(links_to_pdfs)
+print(merge_result.result)
+```
     
 ### <a name="helper-methods"></a>Helper Methods
 
@@ -185,15 +188,16 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
 
 On any `Api2PdfResponse` that succesfully generated a pdf, you can use the handy download_pdf() method to download the pdf to a file-like object which you can then save to your local cache. If the pdf generation was unsuccessful, it will throw a FileNotFoundException.
 
-    from api2pdf import Api2Pdf
-    a2p = Api2Pdf('YOUR-API-KEY')
+```
+from api2pdf import Api2Pdf
+a2p = Api2Pdf('YOUR-API-KEY')
     
-    # merge pdfs
-    links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
-    merge_result = a2p.merge(links_to_pdfs)
+# merge pdfs
+links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
+merge_result = a2p.merge(links_to_pdfs)
     
-    pdf_as_file_object = merge_result.download_pdf()
-    
+pdf_as_file_object = merge_result.download_pdf()
+```
     
 ## <a name="faq"></a>FAQ
 
