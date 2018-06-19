@@ -76,8 +76,8 @@ We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to con
 - [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
 - [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
 
-##### HeadlessChrome.convert_from_html(html, **options)
-##### WkHtmlToPdf.convert_from_html(html, **options)
+##### HeadlessChrome.convert_from_html(html, inline_pdf=True, file_name=None, **options)
+##### WkHtmlToPdf.convert_from_html(html, inline_pdf=True, file_name=None, **options)
 
     from api2pdf import Api2Pdf
     a2p = Api2Pdf('YOUR-API-KEY')
@@ -97,9 +97,9 @@ We support both wkhtmltopdf and Headless Chrome with the endpoint to convert url
 - [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
 - [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
 
-##### HeadlessChrome.convert_from_url(url, **options)
+##### HeadlessChrome.convert_from_url(url, inline_pdf=True, file_name=None, **options)
 
-##### WkHtmlToPdf.convert_from_url(url, **options)
+##### WkHtmlToPdf.convert_from_url(url, inline_pdf=True, file_name=None, **options)
 
     from api2pdf import Api2Pdf
     a2p = Api2Pdf('YOUR-API-KEY')
@@ -120,7 +120,7 @@ We use **LibreOffice** to convert the following formats to PDF:
 
 You must provide a url to the file. Our engine will consume the file at that URL and convert it to the PDF.
 
-##### LibreOffice.convert_from_url(url)
+##### LibreOffice.convert_from_url(url, inline_pdf=True, file_name=None)
 
     from api2pdf import Api2Pdf
     a2p = Api2Pdf('YOUR-API-KEY')

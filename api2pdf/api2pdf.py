@@ -28,18 +28,25 @@ class Api2Pdf(object):
     def merge(self, list_of_urls):
         return self._make_request(API2PDF_MERGE_ENDPOINT, list_of_urls)
 
-    def _make_html_payload(self, html, **options):
+    def _make_html_payload(self, html, inline_pdf=False, file_name=None, **options):
         payload = {
             'html': html,
+            'inlinePdf': inline_pdf
         }
+        if file_name != None:
+            payload['fileName'] = file_name
+
         if options != None:
             payload['options'] = options
         return payload
 
-    def _make_url_payload(self, url, **options):
+    def _make_url_payload(self, url, inline_pdf=False, file_name=None, **options):
         payload = {
-            'url': url
+            'url': url,
+            'inlinePdf': inline_pdf
         }
+        if file_name != None:
+            payload['fileName'] = file_name
         if options != None:
             payload['options'] = options
         return payload
@@ -51,26 +58,26 @@ class Api2Pdf(object):
         return Api2PdfResponse(headers, endpoint, payload, response)
 
 class Api2Pdf_WkHtmlToPdf(Api2Pdf):
-    def convert_from_html(self, html, **options):
-        payload = self._make_html_payload(html, **options)
+    def convert_from_html(self, html, inline_pdf=False, file_name=None, **options):
+        payload = self._make_html_payload(html, inline_pdf=inline_pdf, file_name=file_name, **options)
         return self._make_request(API2PDF_WKHTMLTOPDF_HTML, payload)
     
-    def convert_from_url(self, url, **options):
-        payload = self._make_url_payload(url, **options)
+    def convert_from_url(self, url, inline_pdf=False, file_name=None, **options):
+        payload = self._make_url_payload(url, inline_pdf=inline_pdf, file_name=file_name, **options)
         return self._make_request(API2PDF_WKHTMLTOPDF_URL, payload)
 
 class Api2Pdf_HeadlessChromeToPdf(Api2Pdf):
-    def convert_from_html(self, html, **options):
-        payload = self._make_html_payload(html, **options)
+    def convert_from_html(self, html, inline_pdf=False, file_name=None, **options):
+        payload = self._make_html_payload(html, inline_pdf=inline_pdf, file_name=file_name, **options)
         return self._make_request(API2PDF_CHROME_HTML, payload)
     
-    def convert_from_url(self, url, **options):
-        payload = self._make_url_payload(url, **options)
+    def convert_from_url(self, url, inline_pdf=False, file_name=None, **options):
+        payload = self._make_url_payload(url, inline_pdf=inline_pdf, file_name=file_name, **options)
         return self._make_request(API2PDF_CHROME_URL, payload)
 
 class Api2Pdf_LibreOffice(Api2Pdf):
-    def convert_from_url(self, url):
-        payload = self._make_url_payload(url)
+    def convert_from_url(self, url, inline_pdf=False, file_name=None):
+        payload = self._make_url_payload(url, inline_pdf=inline_pdf, file_name=file_name)
         return self._make_request(API2PDF_LIBREOFFICE_CONVERT, payload)
 
 class Api2PdfResponse(object):
