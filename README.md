@@ -54,7 +54,7 @@ For debugging, you can simply print the `Api2PdfResponse` object to see the requ
 
     links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
     merge_result = a2p.merge(links_to_pdfs)
-    print(api_response)
+    print(merge_result)
     
 Output:
 
