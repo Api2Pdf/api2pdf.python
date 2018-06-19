@@ -166,11 +166,15 @@ print(libreoffice_result.result)
 
 To use the merge endpoint, supply a list of urls to existing PDFs. The engine will consume all of the PDFs and merge them into a single PDF, in the order in which they were provided in the list.
 
-##### merge(list_of_urls)
+##### merge(list_of_urls, inline_pdf=False, file_name=None)
 
 *Paramaters:*
 
 `list_of_urls <list>` - list of urls to pdfs
+
+`inline_pdf <bool> (optional, default=False)` - if set to True, web browser will load the PDF in a new tab.
+
+`file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
 
 ```
 from api2pdf import Api2Pdf
