@@ -25,8 +25,14 @@ class Api2Pdf(object):
     def LibreOffice(self):
         return Api2Pdf_LibreOffice(self.api_key)
 
-    def merge(self, list_of_urls):
-        return self._make_request(API2PDF_MERGE_ENDPOINT, list_of_urls)
+    def merge(self, list_of_urls, inline_pdf=False, file_name=None):
+        payload = {
+            'urls': list_of_urls,
+            'inlinePdf': inline_pdf
+        }
+        if file_name != None:
+            payload['fileName'] = file_name
+        return self._make_request(API2PDF_MERGE_ENDPOINT, payload)
 
     def _make_html_payload(self, html, inline_pdf=False, file_name=None, **options):
         payload = {
