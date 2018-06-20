@@ -1,44 +1,56 @@
-# Api2Pdf - Python
-[Api2Pdf.com](https://www.api2pdf.com) | [Docs](https://www.api2pdf.com/documentation) 
+# api2pdf.python
+Python bindings for [Api2pdf REST API](https://www.api2pdf.com/documentation) 
 
-## What is Api2Pdf?
-Api2Pdf.com is a service for instantly generating PDFs.
+Api2Pdf.com is a REST API for instantly generating PDF documents from HTML, URLs, Microsoft Office Documents (Word, Excel, PPT), and images. The API also supports merge / concatenation of two or more PDFs. Api2Pdf is a wrapper for popular libraries such as **wkhtmltopdf**, **Headless Chrome**, and **LibreOffice**.
 
-- [Get Started](#get-started)
-- [HTML](#convert-from-html)
-- [URLs](#convert-from-urls)
-- [Microsoft Office documents (Word, Excel, Powerpoint)](#convert-from-office)
-- [Images](#convert-from-office)
-- [Merge / Concatenate two or more PDFs](#merge)
-- [Helper Methods](#helper-methods)
+- [Installation](#installation)
+- [Resources](#resources)
+- [Authorization](#authorization)
+- [Usage](#usage)
 - [FAQ](#faq)
 
-Api2Pdf provides access to **wkhtmltopdf**, **Headless Chrome**, and **LibreOffice**, along with the ability to merge / concatenate PDFs together.
 
+## <a name="installation"></a>Add a dependency
 
+### PyPI
 
-## <a name="get-started"></a>Get Started
-This python library provides convenient methods for accessing the REST API [documented here](https://www.api2pdf.com/documentation/).
+Run the pip command for installing the client `pip install api2pdf`
+
+## <a name="resources"></a>Resources
+
+Resources this API supports:
+
+- [wkhtmltopdf](#wkhtmltopdf)
+- [Headless Chrome](#chrome)
+- [LibreOffice](#libreoffice)
+- [Merge / Concatenate PDFs](#merge)
+- [Helper Methods](#helpers)
+
+## <a name="authorization"></a>Authorization
 
 ### Acquire API Key
 1. Create an account and login at [portal.api2pdf.com](https://portal.api2pdf.com)
 2. Add a balance to your account (no monthly commitment, sign up with as little as $1)
 3. Create an application and grab your API Key
-
-### Install
-    pip install api2pdf
     
-### Usage
+## <a name="#usage"></a>Usage
+
+### Initialize the Client
+
+All usage starts by calling the import command and initializing the client by passing your API key as a parameter to the constructor.
 
     from api2pdf import Api2Pdf
     
-    a2p = Api2Pdf('YOUR-API-KEY')
-    api_response = a2p.HeadlessChrome.convert_from_html('<p>Hello, World</p>')
+    a2p_client = Api2Pdf('YOUR-API-KEY')
+
+Once you initialize the client, you can make calls like so:
+
+    api_response = a2p_client.HeadlessChrome.convert_from_html('<p>Hello, World</p>')
     print(api_response.result)
     
-### Sample Result
+### Result Object
 
-An `Api2PdfResponse` object is returned from every API call. Call the `result` attribute to retrieve the data. If a call is unsuccessful then `success` will show False and the `error` will provide the reason for failure. Additional attributes include the total data usage in, out, and the cost for the API call.
+An `Api2PdfResponse` object is returned from every API call. Call the `result` attribute to retrieve the data. If a call is unsuccessful then `success` will show False and the `error` will provide the reason for failure. Additional attributes include the total data usage in, out, and the cost for the API call, typically very small fractions of a penny.
 
     {
 	    'pdf': 'https://link-to-pdf-only-available-for-24-hours',
@@ -50,159 +62,150 @@ An `Api2PdfResponse` object is returned from every API call. Call the `result` a
 	    'responseId': '6e46637a-650d-46d5-af0b-3d7831baccbb'
     }
 
-For debugging, you can simply print the `Api2PdfResponse` object to see the request and response data.
+For debugging, you can print the `Api2PdfResponse` object to see the request and response data.
 
-    links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
-    merge_result = a2p.merge(links_to_pdfs)
-    print(merge_result)
+    api_response = a2p_client.HeadlessChrome.convert_from_html('<p>Hello, World</p>')
+    print(api_response)
     
 Output:
 
     ---- API2PDF REQUEST ----
-    - Headers: {'Authorization': 'f8bd6792-f1cd-42df-9bf9-f7a35e59362f'}
-    - Endpoint: https://v2018.api2pdf.com/merge
+    - Headers: {'Authorization': 'YOUR-API-KEY'}
+    - Endpoint: https://v2018.api2pdf.com/chrome/html
     - Payload:
-    ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
+    {'html': '<p>Hello, World</p>'}
     ---- API2PDF RESPONSE ----
     {'pdf': 'https://link-to-pdf-only-available-for-24-hours', 'mbIn': 0.08421039581298828, 'mbOut': 0.08830547332763672, 'cost': 0.00017251586914062501, 'success': True, 'error': None, 'responseId': '163c4d25-25d7-4b82-bf50-907597d2ad46'}
 
     
-## Documentation
+### <a name="wkhtmltopdf"></a> wkhtmltopdf
 
-### <a name="convert-from-html"></a>Convert HTML to PDF
+**Convert HTML to PDF**
 
-We support both **wkhtmltopdf** and **Headless Chrome** with the endpoint to convert raw html to PDFs. Both endpoints allow you to pass keyword arguments that are options available for their respective libraries.
-
-##### HeadlessChrome.convert_from_html(html, inline_pdf=False, file_name=None, **options)
-##### WkHtmlToPdf.convert_from_html(html, inline_pdf=False, file_name=None, **options)
-
-*Parameters:*
-
-`html <string>` - raw string of html content
-
-`inline_pdf <bool> (optional, default=False)` - if set to True, web browser will load the PDF in a new tab.
-
-`file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
-
-`**options <keyword args> (optional, default=None)` - include options for generating a PDF with your chosen library. See available options here:
-
-- [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
-- [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
-
-```
-from api2pdf import Api2Pdf
-a2p = Api2Pdf('YOUR-API-KEY')
+    api_response = a2p_client.WkHtmlToPdf.convert_from_html('<p>Hello, World</p>')
     
-# headless chrome
-headless_chrome_result = a2p.HeadlessChrome.convert_from_html('<p>Hello World</p>')
-print(headless_chrome_result.result)
+**Convert HTML to PDF (load PDF in browser window and specify a file name)**
+
+    api_response = a2p_client.WkHtmlToPdf.convert_from_html('<p>Hello, World</p>', inline_pdf=True, file_name='test.pdf')
     
-# wkhtmltopdf
-wkhtmltopdf_result = a2p.WkHtmlToPdf.convert_from_html('<p>Hello World</p>')
-print(wkhtmltopdf_result.result)
-```
+**Convert HTML to PDF (use keyword arguments for advanced wkhtmltopdf settings)**
+[View full list of wkhtmltopdf options available.](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
+
+    options = {
+        'orientation': 'landscape',
+        'pageSize': 'A4'
+    }
+    api_response = a2p_client.WkHtmlToPdf.convert_from_html('<p>Hello, World</p>', **options)
+
+**Convert URL to PDF**
+
+    api_response = a2p_client.WkHtmlToPdf.convert_from_url('http://www.api2pdf.com')
     
-### <a name="convert-from-url"></a>Convert URL to PDF
+**Convert URL to PDF (load PDF in browser window and specify a file name)**
 
-We support both wkhtmltopdf and Headless Chrome with the endpoint to convert urls to PDFs. Both endpoints allow you to pass keyword arguments that are options available for their respective libraries.
-
-##### HeadlessChrome.convert_from_url(url, inline_pdf=False, file_name=None, **options)
-
-##### WkHtmlToPdf.convert_from_url(url, inline_pdf=False, file_name=None, **options)
-
-*Parameters:*
-
-`url <string>` - url to a pdf that Api2Pdf can consume
-
-`inline_pdf <bool> (optional, default=False)` - if set to True, web browser will load the PDF in a new tab.
-
-`file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
-
-`**options <keyword args> (optional, default=None)` - include options for generating a PDF with your chosen library. See available options here:
-
-- [wkhtmltopdf options](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
-- [headless chrome options](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
-
-```
-from api2pdf import Api2Pdf
-a2p = Api2Pdf('YOUR-API-KEY')
+    api_response = a2p_client.WkHtmlToPdf.convert_from_url('http://www.api2pdf.com', inline_pdf=True, file_name='test.pdf')
     
-# headless chrome
-headless_chrome_result = a2p.HeadlessChrome.convert_from_url('https://LINK-TO-YOUR-WEBSITE')
-print(headless_chrome_result.result)
-    
-# wkhtmltopdf
-wkhtmltopdf_result = a2p.WkHtmlToPdf.convert_from_url('https://LINK-TO-YOUR-WEBSITE')
-print(wkhtmltopdf_result.result)
-```
-    
-### <a name="convert-from-office"></a>Convert Microsoft Office Documents and Images to PDF
+**Convert URL to PDF (use keyword arguments for advanced wkhtmltopdf settings)**
+[View full list of wkhtmltopdf options available.](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
 
-We use **LibreOffice** to convert the following formats to PDF:
+    options = {
+        'orientation': 'landscape',
+        'pageSize': 'A4'
+    }
+    api_response = a2p_client.WkHtmlToPdf.convert_from_url('http://www.api2pdf.com', **options)
+
+
+---
+
+## <a name="chrome"></a>Headless Chrome
+
+**Convert HTML to PDF**
+
+    api_response = a2p_client.HeadlessChrome.convert_from_html('<p>Hello, World</p>')
+    
+**Convert HTML to PDF (load PDF in browser window and specify a file name)**
+
+    api_response = a2p_client.HeadlessChrome.convert_from_html('<p>Hello, World</p>', inline_pdf=True, file_name='test.pdf')
+    
+**Convert HTML to PDF (use keyword arguments for advanced Headless Chrome settings)**
+[View full list of Headless Chrome options available.](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
+
+    options = {
+        'orientation': 'landscape',
+        'pageSize': 'A4'
+    }
+    api_response = a2p_client.HeadlessChrome.convert_from_html('<p>Hello, World</p>', **options)
+
+**Convert URL to PDF**
+
+    api_response = a2p_client.HeadlessChrome.convert_from_url('http://www.api2pdf.com')
+    
+**Convert URL to PDF (load PDF in browser window and specify a file name)**
+
+    api_response = a2p_client.HeadlessChrome.convert_from_url('http://www.api2pdf.com', inline_pdf=True, file_name='test.pdf')
+    
+**Convert URL to PDF (use keyword arguments for advanced Headless Chrome settings)**
+[View full list of Headless Chrome options available.](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
+
+    options = {
+        'orientation': 'landscape',
+        'pageSize': 'A4'
+    }
+    api_response = a2p_client.HeadlessChrome.convert_from_url('http://www.api2pdf.com', **options)
+    
+---
+
+## <a name="libreoffice"></a>LibreOffice
+
+LibreOffice supports the conversion to PDF from the following file formats:
 
 - doc, docx, xls, xlsx, ppt, pptx, gif, jpg, png, bmp, rtf, txt, html
 
 You must provide a url to the file. Our engine will consume the file at that URL and convert it to the PDF.
 
-##### LibreOffice.convert_from_url(url, inline_pdf=False, file_name=None)
+**Convert Microsoft Office Document or Image to PDF**
 
-*Parameters:*
-
-`url <string>` - url to a file of one of the supported formats above
-
-`inline_pdf <bool> (optional, default=False)` - if set to True, web browser will load the PDF in a new tab.
-
-`file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
-
-```
-from api2pdf import Api2Pdf
-a2p = Api2Pdf('YOUR-API-KEY')
+    api_response = a2p_client.LibreOffice.convert_from_url('http://www.api2pdf.com')
     
-libreoffice_result = a2p.LibreOffice.convert_from_html('https://LINK-TO-YOUR-FILE')
-print(libreoffice_result.result)
-```
+**Convert Microsoft Office Document or Image to PDF (load PDF in browser window and specify a file name)**
+
+    api_response = a2p_client.LibreOffice.convert_from_url('http://www.api2pdf.com', inline_pdf=True, file_name='test.pdf')
     
-### <a name="merge"></a>Merge / Concatenate Two or More PDFs
+---
+    
+## <a name="merge"></a>Merge / Concatenate Two or More PDFs
 
 To use the merge endpoint, supply a list of urls to existing PDFs. The engine will consume all of the PDFs and merge them into a single PDF, in the order in which they were provided in the list.
 
-##### merge(list_of_urls, inline_pdf=False, file_name=None)
+**Merge PDFs from list of URLs to existing PDFs**
 
-*Paramaters:*
+    links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
+    merge_result = a2p_client.merge(links_to_pdfs)
 
-`list_of_urls <list>` - list of urls to pdfs
+**Merge PDFs from list of URLs to existing PDFs (load PDF in browser window and specify a file name)**
 
-`inline_pdf <bool> (optional, default=False)` - if set to True, web browser will load the PDF in a new tab.
+    links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
+    merge_result = a2p_client.merge(links_to_pdfs, inline_pdf=True, file_name='test.pdf')
+    
+---
+    
+## <a name="helpers"></a>Helper Methods
 
-`file_name <string> (optional, default=None)` - specify an optional file name like "report-03012019.pdf".
+**Api2PdfResponse: download_pdf()**
+
+On any `Api2PdfResponse` that succesfully generated a pdf, you can use the handy `download_pdf()` method to download the pdf to a file-like object which you can then save to your local cache. If the pdf generation was unsuccessful, it will throw a FileNotFoundException.
 
 ```
 from api2pdf import Api2Pdf
-a2p = Api2Pdf('YOUR-API-KEY')
+a2p_client = Api2Pdf('YOUR-API-KEY')
     
 # merge pdfs
 links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
-merge_result = a2p.merge(links_to_pdfs)
-print(merge_result.result)
-```
-    
-### <a name="helper-methods"></a>Helper Methods
-
-##### Api2PdfResponse: download_pdf()
-
-On any `Api2PdfResponse` that succesfully generated a pdf, you can use the handy download_pdf() method to download the pdf to a file-like object which you can then save to your local cache. If the pdf generation was unsuccessful, it will throw a FileNotFoundException.
-
-```
-from api2pdf import Api2Pdf
-a2p = Api2Pdf('YOUR-API-KEY')
-    
-# merge pdfs
-links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
-merge_result = a2p.merge(links_to_pdfs)
+merge_result = a2p_client.merge(links_to_pdfs)
     
 pdf_as_file_object = merge_result.download_pdf()
 ```
-    
+---
 ## <a name="faq"></a>FAQ
 
 #### How do you bill?
@@ -215,7 +218,7 @@ The average customer spents about $2/month on our product. We do not have free a
 We do not have any long term contracts. You can leave us at anytime with no further commitments. As our minimum cost is $1.00, we do not provide refunds.
 
 #### Are there any limits?
-Api2Pdf does not set any specific limits on PDF file size, however our system does have processing power limitations. Each PDF request is provided 3 GB of RAM to work with and 110 seconds to generate the PDF. We offer WKHTMLTOPDF, Headless Chrome, and LibreOffice to do conversions. Our platform will have the same limits as those underlying components. If the underlying component fails to convert to PDF, it will also fail via our service. Some examples are:
+Api2Pdf does not set any specific limits on PDF file size, however our system does have processing power limitations. Each PDF request is provided 3 GB of RAM to work with and 90 seconds to generate the PDF. We offer WKHTMLTOPDF, Headless Chrome, and LibreOffice to do conversions. Our platform will have the same limits as those underlying components. If the underlying component fails to convert to PDF, it will also fail via our service. Some examples are:
 
 - Password protected PDFs
 - Encrypted PDFs
