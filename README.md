@@ -165,11 +165,11 @@ You must provide a url to the file. Our engine will consume the file at that URL
 
 **Convert Microsoft Office Document or Image to PDF**
 
-    api_response = a2p_client.LibreOffice.convert_from_url('http://www.api2pdf.com')
+    api_response = a2p_client.LibreOffice.convert_from_url('https://www.api2pdf.com/wp-content/themes/api2pdf/assets/samples/sample-word-doc.docx')
     
 **Convert Microsoft Office Document or Image to PDF (load PDF in browser window and specify a file name)**
 
-    api_response = a2p_client.LibreOffice.convert_from_url('http://www.api2pdf.com', inline_pdf=True, file_name='test.pdf')
+    api_response = a2p_client.LibreOffice.convert_from_url('https://www.api2pdf.com/wp-content/themes/api2pdf/assets/samples/sample-word-doc.docx', inline_pdf=True, file_name='test.pdf')
     
 ---
     
