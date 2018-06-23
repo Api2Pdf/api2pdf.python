@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="api2pdf",
-    version="0.0.9",
+    version="0.0.10",
     author="Zack Schwartz",
     author_email="support@api2pdf.com",
     description="Wrapper for api2pdf.com library for converting html, urls, and word documents to pdf",
