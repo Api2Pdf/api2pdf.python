@@ -131,8 +131,7 @@ Output:
 [View full list of Headless Chrome options available.](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
 
     options = {
-        'orientation': 'landscape',
-        'pageSize': 'A4'
+        'landscape': True
     }
     api_response = a2p_client.HeadlessChrome.convert_from_html('<p>Hello, World</p>', **options)
 
@@ -148,8 +147,7 @@ Output:
 [View full list of Headless Chrome options available.](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
 
     options = {
-        'orientation': 'landscape',
-        'pageSize': 'A4'
+        'landscape': True
     }
     api_response = a2p_client.HeadlessChrome.convert_from_url('http://www.api2pdf.com', **options)
     
