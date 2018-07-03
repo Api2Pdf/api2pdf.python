@@ -30,7 +30,7 @@ Resources this API supports:
 
 ### Acquire API Key
 
-Create an account at [portal.api2pdf.com](https://portal.api2pdf.com/register) to get your API key
+Create an account at [portal.api2pdf.com](https://portal.api2pdf.com/register) to get your API key.
     
 ## <a name="#usage"></a>Usage
 
