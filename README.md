@@ -203,9 +203,9 @@ merge_result = a2p_client.merge(links_to_pdfs)
 pdf_as_file_object = merge_result.download_pdf()
 ```
 
-**Delete a PDF on Command**
+**Delete a PDF on Command with delete(response_id)**
 
-By default, Api2Pdf will automatically delete your PDFs after 24 hours. If you have higher security requirements and need to delete the PDFs at-will, you can do so by calling the `delete(response_id)` method on the Api2Pdf object where `response_id` parameter comes form the responseId attribute in the Api2PdfResponse result.
+By default, Api2Pdf will automatically delete your PDFs after 24 hours. If you have higher security requirements and need to delete the PDFs at-will, you can do so by calling the `delete(response_id)` method on the Api2Pdf object where `response_id` parameter comes from the responseId attribute in the Api2PdfResponse result.
 
 ```
 from api2pdf import Api2Pdf
