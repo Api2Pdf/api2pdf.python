@@ -8,10 +8,12 @@ API2PDF_WKHTMLTOPDF_URL = API2PDF_BASE_ENDPOINT + '/wkhtmltopdf/url'
 API2PDF_CHROME_HTML = API2PDF_BASE_ENDPOINT + '/chrome/html'
 API2PDF_CHROME_URL = API2PDF_BASE_ENDPOINT + '/chrome/url'
 API2PDF_LIBREOFFICE_CONVERT = API2PDF_BASE_ENDPOINT + '/libreoffice/convert'
+API2PDF_DELETE_PDF = API2PDF_BASE_ENDPOINT + '/pdf/{response_id}'
 
 class Api2Pdf(object):
-    def __init__(self, api_key):
+    def __init__(self, api_key, tag=''):
         self.api_key = api_key
+        self.tag = tag
 
     @property
     def WkHtmlToPdf(self):
@@ -33,6 +35,12 @@ class Api2Pdf(object):
         if file_name != None:
             payload['fileName'] = file_name
         return self._make_request(API2PDF_MERGE_ENDPOINT, payload)
+
+    def delete(self, response_id):
+        headers = self.request_header
+        endpoint = API2PDF_DELETE_PDF.format(response_id=response_id)
+        response = requests.delete(endpoint, headers=headers)
+        return Api2PdfResponse(headers, endpoint, '', response)
 
     def _make_html_payload(self, html, inline_pdf=False, file_name=None, **options):
         payload = {
@@ -58,10 +66,18 @@ class Api2Pdf(object):
         return payload
 
     def _make_request(self, endpoint, payload):
-        headers = {'Authorization': self.api_key}
+        headers = self.request_header
         payload_as_json = json.dumps(payload)
         response = requests.post(endpoint, data=payload_as_json, headers=headers)
         return Api2PdfResponse(headers, endpoint, payload, response)
+
+    @property
+    def request_header(self):
+        header = {}
+        header['Authorization'] = self.api_key
+        if self.tag:
+            header['Tag'] = self.tag
+        return header
 
 class Api2Pdf_WkHtmlToPdf(Api2Pdf):
     def convert_from_html(self, html, inline_pdf=False, file_name=None, **options):
