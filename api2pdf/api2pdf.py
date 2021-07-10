@@ -1,63 +1,38 @@
 import requests
 import json
 
-API2PDF_BASE_ENDPOINT = 'https://v2018.api2pdf.com'
-API2PDF_MERGE_ENDPOINT = API2PDF_BASE_ENDPOINT + '/merge'
-API2PDF_WKHTMLTOPDF_HTML = API2PDF_BASE_ENDPOINT + '/wkhtmltopdf/html'
-API2PDF_WKHTMLTOPDF_URL = API2PDF_BASE_ENDPOINT + '/wkhtmltopdf/url'
-API2PDF_CHROME_HTML = API2PDF_BASE_ENDPOINT + '/chrome/html'
-API2PDF_CHROME_URL = API2PDF_BASE_ENDPOINT + '/chrome/url'
-API2PDF_LIBREOFFICE_CONVERT = API2PDF_BASE_ENDPOINT + '/libreoffice/convert'
-API2PDF_DELETE_PDF = API2PDF_BASE_ENDPOINT + '/pdf/{response_id}'
-
 class Api2Pdf(object):
-    def __init__(self, api_key, tag=''):
+    def __init__(self, api_key, base_url='https://v2.api2pdf.com', tag=''):
         self.api_key = api_key
         self.tag = tag
+        self.base_url = base_url
 
     @property
-    def WkHtmlToPdf(self):
-        return Api2Pdf_WkHtmlToPdf(self.api_key)
+    def WkHtml(self):
+        return Api2Pdf_WkHtml(self.api_key, self.base_url)
 
     @property
-    def HeadlessChrome(self):
-        return Api2Pdf_HeadlessChromeToPdf(self.api_key)
+    def Chrome(self):
+        return Api2Pdf_Chrome(self.api_key, self.base_url)
 
     @property
     def LibreOffice(self):
-        return Api2Pdf_LibreOffice(self.api_key)
+        return Api2Pdf_LibreOffice(self.api_key, self.base_url)
 
-    def merge(self, list_of_urls, inline_pdf=False, file_name=None):
-        payload = {
-            'urls': list_of_urls,
-            'inlinePdf': inline_pdf
-        }
-        if file_name != None:
-            payload['fileName'] = file_name
-        return self._make_request(API2PDF_MERGE_ENDPOINT, payload)
+    @property
+    def PdfSharp(self):
+        return Api2Pdf_PdfSharp(self.api_key, self.base_url)
 
     def delete(self, response_id):
         headers = self.request_header
-        endpoint = API2PDF_DELETE_PDF.format(response_id=response_id)
-        response = requests.delete(endpoint, headers=headers)
-        return Api2PdfResponse(headers, endpoint, '', response)
+        endpoint = f'/file/{response_id}'.format(response_id=response_id)
+        full_endpoint = self.base_url + endpoint
+        response = requests.delete(full_endpoint, headers=headers)
+        return Api2PdfResponse(headers, full_endpoint, '', response)
 
-    def _make_html_payload(self, html, inline_pdf=False, file_name=None, **options):
+    def _build_base_payload(self, inline=True, file_name=None, **options):
         payload = {
-            'html': html,
-            'inlinePdf': inline_pdf
-        }
-        if file_name != None:
-            payload['fileName'] = file_name
-
-        if options != None:
-            payload['options'] = options
-        return payload
-
-    def _make_url_payload(self, url, inline_pdf=False, file_name=None, **options):
-        payload = {
-            'url': url,
-            'inlinePdf': inline_pdf
+            'inline': inline
         }
         if file_name != None:
             payload['fileName'] = file_name
@@ -68,8 +43,9 @@ class Api2Pdf(object):
     def _make_request(self, endpoint, payload):
         headers = self.request_header
         payload_as_json = json.dumps(payload)
-        response = requests.post(endpoint, data=payload_as_json, headers=headers)
-        return Api2PdfResponse(headers, endpoint, payload, response)
+        full_endpoint = self.base_url + endpoint
+        response = requests.post(full_endpoint, data=payload_as_json, headers=headers)
+        return Api2PdfResponse(headers, full_endpoint, payload, response)
 
     @property
     def request_header(self):
@@ -79,28 +55,83 @@ class Api2Pdf(object):
             header['Tag'] = self.tag
         return header
 
-class Api2Pdf_WkHtmlToPdf(Api2Pdf):
-    def convert_from_html(self, html, inline_pdf=False, file_name=None, **options):
-        payload = self._make_html_payload(html, inline_pdf=inline_pdf, file_name=file_name, **options)
-        return self._make_request(API2PDF_WKHTMLTOPDF_HTML, payload)
+class Api2Pdf_WkHtml(Api2Pdf):
+    def html_to_pdf(self, html, inline=True, file_name=None, **options):
+        payload = self._build_base_payload(inline, file_name, **options)
+        payload['html'] = html
+        return self._make_request('/wkhtml/pdf/html', payload)
     
-    def convert_from_url(self, url, inline_pdf=False, file_name=None, **options):
-        payload = self._make_url_payload(url, inline_pdf=inline_pdf, file_name=file_name, **options)
-        return self._make_request(API2PDF_WKHTMLTOPDF_URL, payload)
+    def url_to_pdf(self, url, inline=True, file_name=None, **options):
+        payload = self._build_base_payload(inline, file_name, **options)
+        payload['url'] = url
+        return self._make_request('/wkhtml/pdf/url', payload)
 
-class Api2Pdf_HeadlessChromeToPdf(Api2Pdf):
-    def convert_from_html(self, html, inline_pdf=False, file_name=None, **options):
-        payload = self._make_html_payload(html, inline_pdf=inline_pdf, file_name=file_name, **options)
-        return self._make_request(API2PDF_CHROME_HTML, payload)
+class Api2Pdf_Chrome(Api2Pdf):
+    def html_to_pdf(self, html, inline=True, file_name=None, **options):
+        payload = self._build_base_payload(inline, file_name, **options)
+        payload['html'] = html
+        return self._make_request('/chrome/pdf/html', payload)
     
-    def convert_from_url(self, url, inline_pdf=False, file_name=None, **options):
-        payload = self._make_url_payload(url, inline_pdf=inline_pdf, file_name=file_name, **options)
-        return self._make_request(API2PDF_CHROME_URL, payload)
+    def url_to_pdf(self, url, inline=True, file_name=None, **options):
+        payload = self._build_base_payload(inline, file_name, **options)
+        payload['url'] = url
+        return self._make_request('/chrome/pdf/url', payload)
+
+    def html_to_image(self, html, inline=True, file_name=None, **options):
+        payload = self._build_base_payload(inline, file_name, **options)
+        payload['html'] = html
+        return self._make_request('/chrome/image/html', payload)
+    
+    def url_to_image(self, url, inline=True, file_name=None, **options):
+        payload = self._build_base_payload(inline, file_name, **options)
+        payload['url'] = url
+        return self._make_request('/chrome/image/url', payload)
 
 class Api2Pdf_LibreOffice(Api2Pdf):
-    def convert_from_url(self, url, inline_pdf=False, file_name=None):
-        payload = self._make_url_payload(url, inline_pdf=inline_pdf, file_name=file_name)
-        return self._make_request(API2PDF_LIBREOFFICE_CONVERT, payload)
+    def any_to_pdf(self, url, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['url'] = url
+        return self._make_request('/libreoffice/any-to-pdf', payload)
+
+    def thumbnail(self, url, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['url'] = url
+        return self._make_request('/libreoffice/thumbnail', payload)
+
+    def pdf_to_html(self, url, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['url'] = url
+        return self._make_request('/libreoffice/pdf-to-html', payload)
+
+    def html_to_docx(self, url, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['url'] = url
+        return self._make_request('/libreoffice/html-to-docx', payload)
+
+    def html_to_xlsx(self, url, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['url'] = url
+        return self._make_request('/libreoffice/html-to-xlsx', payload)
+
+class Api2Pdf_PdfSharp(Api2Pdf):
+    def merge(self, urls, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['urls'] = urls
+        return self._make_request('/pdfsharp/merge', payload)
+
+    def add_bookmarks(self, url, bookmarks, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['url'] = url
+        payload['bookmarks'] = bookmarks
+        return self._make_request('/pdfsharp/bookmarks', payload)
+
+    def add_password(self, url, userpassword, ownerpassword=None, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['url'] = url
+        payload['userpassword'] = userpassword
+        if ownerpassword != None:
+            payload['ownerpassword'] = ownerpassword
+        return self._make_request('/pdfsharp/password', payload)
 
 class Api2PdfResponse(object):
     def __init__(self, headers, endpoint, payload_as_json, response):
@@ -125,11 +156,11 @@ class Api2PdfResponse(object):
     def download_pdf(self):
         USERAGENT = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
         if self.result['success']:
-            downloaded_pdf = requests.get(self.result['pdf'], headers=USERAGENT)
-            data = downloaded_pdf.content
+            downloaded_file = requests.get(self.result['FileUrl'], headers=USERAGENT)
+            data = downloaded_file.content
             return data
         else:
-            raise FileNotFoundError("PDF never generated " + self.result['error'])
+            raise FileNotFoundError("File never generated " + self.result['error'])
 
     def __str__(self):
         return """
