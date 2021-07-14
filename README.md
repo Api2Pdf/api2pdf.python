@@ -206,7 +206,8 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
     merge_result = a2p_client.PdfSharp.merge(links_to_pdfs, inline=True, file_name='test.pdf')
 
 **Add bookmarks to existing PDF**
-    url = 'https://link-to-pdf
+
+    url = 'https://link-to-pdf'
     bookmarks = [
         { 'Page': 0, 'Title': 'Introduction' },
         { 'Page': 1, 'Title': 'Second page' }
@@ -215,7 +216,7 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
 
 **Add password to existing PDF**
 
-    url = 'https://link-to-pdf
+    url = 'https://link-to-pdf'
     password = 'hello'
     response = a2p.PdfSharp.add_password(url, password)
 
