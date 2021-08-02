@@ -153,7 +153,7 @@ class Api2PdfResponse(object):
     def result(self):
         return self._result
 
-    def download_pdf(self):
+    def download_file(self):
         USERAGENT = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
         if self.result['Success']:
             downloaded_file = requests.get(self.result['FileUrl'], headers=USERAGENT)
