@@ -224,9 +224,9 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
     
 ## <a name="helpers"></a>Helper Methods
 
-**Api2PdfResponse: download_pdf()**
+**Api2PdfResponse: download_file()**
 
-On any `Api2PdfResponse` that succesfully generated a pdf, you can use the handy `download_pdf()` method to download the pdf to a file-like object which you can then save to your local cache. If the pdf generation was unsuccessful, it will throw a FileNotFoundException.
+On any `Api2PdfResponse` that succesfully generated a pdf, you can use the handy `download_file()` method to download the pdf to a file-like object which you can then save to your local cache. If the pdf generation was unsuccessful, it will throw a FileNotFoundException.
 
 ```
 from api2pdf import Api2Pdf
@@ -236,7 +236,7 @@ a2p_client = Api2Pdf('YOUR-API-KEY')
 links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
 merge_result = a2p_client.PdfSharp.merge(links_to_pdfs)
     
-pdf_as_file_object = merge_result.download_pdf()
+pdf_as_file_object = merge_result.download_file()
 ```
 
 **Delete a PDF on Command with delete(response_id)**
