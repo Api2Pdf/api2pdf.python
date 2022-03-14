@@ -133,6 +133,13 @@ class Api2Pdf_PdfSharp(Api2Pdf):
             payload['ownerpassword'] = ownerpassword
         return self._make_request('/pdfsharp/password', payload)
 
+    def extract_pages(self, url, start=0, end=0, inline=True, file_name=None):
+        payload = self._build_base_payload(inline, file_name)
+        payload['url'] = url
+        payload['start'] = start
+        payload['end'] = end
+        return self._make_request('/pdfsharp/extract-pages', payload)
+
 class Api2PdfResponse(object):
     def __init__(self, headers, endpoint, payload_as_json, response):
         self.headers = headers

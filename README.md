@@ -1,7 +1,7 @@
 # api2pdf.python
 Python bindings for [Api2Pdf REST API](https://www.api2pdf.com/documentation/v2) 
 
-Api2Pdf.com is a powerful REST API for instantly generating PDF and Office documents from HTML, URLs, Microsoft Office Documents (Word, Excel, PPT), Email files, and images. You can generate image preview or thumbnail of a PDF, office document, or email file. The API also supports merge / concatenation of two or more PDFs, setting passwords on PDFs, and adding bookmarks to PDFs. Api2Pdf is a wrapper for popular libraries such as **wkhtmltopdf**, **Headless Chrome**, **PdfSharp**, and **LibreOffice**.
+Api2Pdf.com is a powerful REST API for instantly generating PDF and Office documents from HTML, URLs, Microsoft Office Documents (Word, Excel, PPT), Email files, and images. You can generate image preview or thumbnail of a PDF, office document, or email file. The API also supports merge / concatenation of two or more PDFs, setting passwords on PDFs, adding bookmarks to PDFs, splitting or extracting pages from a PDF. Api2Pdf is a wrapper for popular libraries such as **wkhtmltopdf**, **Headless Chrome**, **PdfSharp**, and **LibreOffice**.
 
 - [Installation](#installation)
 - [Resources](#resources)
@@ -219,6 +219,15 @@ To use the merge endpoint, supply a list of urls to existing PDFs. The engine wi
     url = 'https://link-to-pdf'
     password = 'hello'
     response = a2p.PdfSharp.add_password(url, password)
+
+**Extract pages, or split an existing PDF**
+
+[More information here](https://www.api2pdf.com/extract-pages-out-of-a-pdf-with-rest-api/)
+
+    url = 'https://link-to-pdf'
+    start = 0
+    end = 2
+    response = a2p.PdfSharp.extract_pages(url, start, end)
 
 ---
     
