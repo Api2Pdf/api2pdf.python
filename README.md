@@ -1,265 +1,357 @@
 # api2pdf.python
-Python bindings for [Api2Pdf REST API](https://www.api2pdf.com/documentation/v2) 
 
-Api2Pdf.com is a powerful REST API for instantly generating PDF and Office documents from HTML, URLs, Microsoft Office Documents (Word, Excel, PPT), Email files, and images. You can generate image preview or thumbnail of a PDF, office document, or email file. The API also supports merge / concatenation of two or more PDFs, setting passwords on PDFs, adding bookmarks to PDFs, splitting or extracting pages from a PDF. Api2Pdf is a wrapper for popular libraries such as **wkhtmltopdf**, **Headless Chrome**, **PdfSharp**, and **LibreOffice**.
+Python bindings for the [Api2Pdf REST API](https://v2.api2pdf.com).
 
-- [Installation](#installation)
-- [Resources](#resources)
-- [Authorization](#authorization)
-- [Usage](#usage)
-- [FAQ](https://www.api2pdf.com/faq)
+Api2Pdf.com is a document generation and file conversion API for Python applications. It supports HTML to PDF, URL to PDF, HTML to image, URL to image, Office document conversion, markdown conversion, structured PDF extraction, zip generation, barcode and QR code generation, PDF page extraction, PDF password protection, and thumbnails or previews for PDF, office, and email files.
 
+The package keeps a simple Pythonic client shape with service groups like `client.Chrome`, `client.WkHtml`, and `client.PdfSharp`.
 
-## <a name="installation"></a>Add a dependency
+## Installation
 
-### PyPI
+Install from PyPI:
 
-Run the pip command for installing the client `pip install api2pdf`
+```bash
+pip install api2pdf
+```
 
-## <a name="resources"></a>Resources
-
-Resources this API supports:
-
-- [wkhtmltopdf](#wkhtmltopdf)
-- [Headless Chrome](#chrome)
-- [LibreOffice](#libreoffice)
-- [Merge / Concatenate PDFs](#merge)
-- [Helper Methods](#helpers)
-
-## <a name="authorization"></a>Authorization
-
-### Acquire API Key
+## Quick Start
 
 Create an account at [portal.api2pdf.com](https://portal.api2pdf.com/register) to get your API key.
-    
-## <a name="#usage"></a>Usage
 
-### Initialize the Client
+```python
+from api2pdf import Api2Pdf
 
-All usage starts by calling the import command and initializing the client by passing your API key as a parameter to the constructor.
+client = Api2Pdf("YOUR-API-KEY")
 
-    from api2pdf import Api2Pdf
-    
-    a2p_client = Api2Pdf('YOUR-API-KEY')
+result = client.Chrome.html_to_pdf("<html><body><h1>Hello, world!</h1></body></html>")
 
-Once you initialize the client, you can make calls like so:
+if result.result["Success"]:
+    print(result.result["FileUrl"])
+else:
+    print(result.result["Error"])
+```
 
-    api_response = a2p_client.Chrome.html_to_pdf('<p>Hello, World</p>')
-    print(api_response.result)
-    
-### Result Object
+## Custom Domains
 
-An `Api2PdfResponse` object is returned from every API call. Call the `result` attribute to retrieve the data. If a call is unsuccessful then `success` will show False and the `error` will provide the reason for failure. Additional attributes include the total data usage in, out, and the cost for the API call, typically very small fractions of a penny.
+The default client base URL is `https://v2.api2pdf.com`.
 
-    {
-	    'FileUrl': 'https://link-to-pdf-only-available-for-24-hours',
-	    'MbOut': 0.08830547332763672,
-        'Seconds': 9.43,
-	    'Cost': 0.00017251586914062501,
-	    'Success': True,
-	    'Error': None,
-	    'ResponseId': '6e46637a-650d-46d5-af0b-3d7831baccbb'
-    }
+To send requests to a custom Api2Pdf domain:
 
-For debugging, you can print the `Api2PdfResponse` object to see the request and response data.
+```python
+from api2pdf import Api2Pdf
 
-    api_response = a2p_client.Chrome.html_to_pdf('<p>Hello, World</p>')
-    print(api_response)
-    
-Output:
+client = Api2Pdf("YOUR-API-KEY", base_url="https://your-custom-domain.api2pdf.com")
+```
 
-    ---- API2PDF REQUEST ----
-    - Headers: {'Authorization': 'YOUR-API-KEY'}
-    - Endpoint: https://v2018.api2pdf.com/chrome/html
-    - Payload:
-    {'html': '<p>Hello, World</p>'}
-    ---- API2PDF RESPONSE ----
-    {'ResponseId': '5ef656a7-2856-43f4-aae3-7b580b0e0421', 'MbOut': 0.012622, 'Cost': 0.000257195288, 'Seconds': 1.208, 'Error': None, 'Success': True, 'FileUrl': 'https://storage.googleapis.com/a2p-v2-storage/5ef656a7-2856-43f4-aae3-7b580b0e0421'}
+You can also attach a tag header to all requests:
 
-    
-### <a name="wkhtmltopdf"></a> wkhtmltopdf
+```python
+client = Api2Pdf("YOUR-API-KEY", tag="billing-batch")
+```
 
-**Convert HTML to PDF**
+## Understanding Responses
 
-    api_response = a2p_client.WkHtml.html_to_pdf('<p>Hello, World</p>')
-    
-**Convert HTML to PDF (ldownload PDF as a file and specify a file name)**
+Most conversion methods return an `Api2PdfResponse`.
 
-    api_response = a2p_client.WkHtml.html_to_pdf('<p>Hello, World</p>', inline_pdf=True, file_name='test.pdf')
-    
-**Convert HTML to PDF (use keyword arguments for advanced wkhtmltopdf settings)**
-[View full list of wkhtmltopdf options available.](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
+```python
+{
+    "FileUrl": "https://link-to-file-available-for-24-hours",
+    "MbOut": 0.08830547332763672,
+    "Cost": 0.00017251586914062501,
+    "Seconds": 2,
+    "Success": True,
+    "Error": None,
+    "ResponseId": "6e46637a-650d-46d5-af0b-3d7831baccbb",
+}
+```
 
-    options = {
-        'orientation': 'landscape',
-        'pageSize': 'A4'
-    }
-    api_response = a2p_client.WkHtml.html_to_pdf('<p>Hello, World</p>', **options)
+Important members:
 
-**Convert URL to PDF**
+- `result`: Parsed JSON response when the API returns standard JSON.
+- `is_binary`: `True` when `output_binary=True` returns file bytes directly.
+- `get_file_bytes()`: Return bytes from a binary response or download them from `FileUrl`.
+- `download_file()`: Backward-compatible alias for `get_file_bytes()`.
+- `save_file(path)`: Save the generated file to disk.
+- `request`: Request metadata useful for debugging.
 
-    api_response = a2p_client.WkHtml.url_to_pdf('http://www.api2pdf.com')
-    
-**Convert URL to PDF (download PDF as a file and specify a file name)**
+For debugging:
 
-    api_response = a2p_client.WkHtml.url_to_pdf('http://www.api2pdf.com', inline=False, file_name='test.pdf')
-    
-**Convert URL to PDF (use keyword arguments for advanced wkhtmltopdf settings)**
-[View full list of wkhtmltopdf options available.](https://www.api2pdf.com/documentation/advanced-options-wkhtmltopdf/)
+```python
+response = client.Chrome.html_to_pdf("<p>Hello, world!</p>")
+print(response)
+```
 
-    options = {
-        'orientation': 'landscape',
-        'pageSize': 'A4'
-    }
-    api_response = a2p_client.WkHtml.url_to_pdf('http://www.api2pdf.com', **options)
+## Common Request Features
 
+Most conversion methods support some or all of these keyword arguments:
 
----
+- `file_name`: Set the output file name.
+- `inline`: Control browser inline display behavior.
+- `use_custom_storage` and `storage`: Send output directly to your own storage target.
+- `extra_http_headers`: Forward custom headers when Api2Pdf fetches a source URL.
+- `output_binary`: Request raw file bytes instead of the standard JSON payload when the endpoint supports it.
+- `use_get=True`: Use the simple GET-style URL endpoints for selected URL conversions.
 
-## <a name="chrome"></a>Headless Chrome
+Example custom storage configuration:
 
-**Convert HTML to PDF**
+```python
+request_storage = {
+    "method": "PUT",
+    "url": "https://your-presigned-upload-url",
+}
 
-    api_response = a2p_client.Chrome.html_to_pdf('<p>Hello, World</p>')
-    
-**Convert HTML to PDF (download PDF as a file and specify a file name)**
+result = client.Chrome.html_to_pdf(
+    "<p>Hello World</p>",
+    use_custom_storage=True,
+    storage=request_storage,
+)
+```
 
-    api_response = a2p_client.Chrome.html_to_pdf('<p>Hello, World</p>', inline=False, file_name='test.pdf')
-    
-**Convert HTML to PDF (use keyword arguments for advanced Headless Chrome settings)**
-[View full list of Headless Chrome options available.](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
+## Chrome
 
-    options = {
-        'landscape': True
-    }
-    api_response = a2p_client.Chrome.html_to_pdf('<p>Hello, World</p>', **options)
+### HTML or URL to PDF
 
-**Convert URL to PDF**
+```python
+html_pdf = client.Chrome.html_to_pdf(
+    "<p>Hello World</p>",
+    DisplayHeaderFooter=True,
+    HeaderTemplate="<div style='font-size:12px;'>Header</div>",
+    FooterTemplate="<div style='font-size:12px;'>Footer</div>",
+    Landscape=True,
+    PreferCSSPageSize=True,
+)
 
-    api_response = a2p_client.Chrome.url_to_pdf('http://www.api2pdf.com')
-    
-**Convert URL to PDF (download PDF as a file and specify a file name)**
+url_pdf = client.Chrome.url_to_pdf(
+    "https://www.api2pdf.com",
+    extra_http_headers={"Authorization": "Bearer token-for-the-source-site"},
+    PuppeteerWaitForMethod="WaitForNavigation",
+    PuppeteerWaitForValue="Load",
+)
+```
 
-    api_response = a2p_client.Chrome.url_to_pdf('http://www.api2pdf.com', inline=False, file_name='test.pdf')
-    
-**Convert URL to PDF (use keyword arguments for advanced Headless Chrome settings)**
-[View full list of Headless Chrome options available.](https://www.api2pdf.com/documentation/advanced-options-headless-chrome/)
+For the simple GET route:
 
-    options = {
-        'landscape': True
-    }
-    api_response = a2p_client.Chrome.url_to_pdf('http://www.api2pdf.com', **options)
-    
-**Convert HTML to Image**
+```python
+result = client.Chrome.url_to_pdf("https://www.api2pdf.com", use_get=True)
+```
 
-    api_response = a2p_client.Chrome.html_to_image('<p>Hello, World</p>')
+### Markdown to PDF
 
-**Convert URL to Image**
+```python
+result = client.Chrome.markdown_to_pdf("# Invoice\n\nGenerated from markdown.")
+```
 
-    api_response = a2p_client.Chrome.url_to_image('http://www.api2pdf.com')
----
+### HTML, URL, or Markdown to Image
 
-## <a name="libreoffice"></a>LibreOffice
+```python
+html_image = client.Chrome.html_to_image(
+    "<p>Hello image</p>",
+    FullPage=True,
+    ViewPortOptions={"Width": 1440, "Height": 900},
+)
 
-Convert any office file to PDF, image file to PDF, email file to PDF, HTML to Word, HTML to Excel, and PDF to HTML. Any file that can be reasonably opened by LibreOffice should be convertible. Additionally, we have an endpoint for generating a *thumbnail* of the first page of your PDF or Office Document. This is great for generating an image preview of your files to users.
+url_image = client.Chrome.url_to_image("https://www.api2pdf.com", use_get=True)
 
-You must provide a url to the file. Our engine will consume the file at that URL and convert it.
+markdown_image = client.Chrome.markdown_to_image("# Screenshot\n\nGenerated from markdown.")
+```
 
-**Convert Microsoft Office Document or Image to PDF**
+## Wkhtmltopdf
 
-    api_response = a2p_client.LibreOffice.any_to_pdf('https://www.api2pdf.com/wp-content/themes/api2pdf/assets/samples/sample-word-doc.docx')
-    
-**Convert Microsoft Office Document or Image to PDF (download PDF as a file and specify a file name)**
+```python
+html_pdf = client.WkHtml.html_to_pdf(
+    "<p>Hello World</p>",
+    orientation="landscape",
+    pageSize="Letter",
+)
 
-    api_response = a2p_client.LibreOffice.any_to_pdf('https://www.api2pdf.com/wp-content/themes/api2pdf/assets/samples/sample-word-doc.docx', inline=False, file_name='test.pdf')
+url_pdf = client.WkHtml.url_to_pdf(
+    "https://www.api2pdf.com",
+    enable_toc=True,
+    toc_options={"disableDottedLines": "true"},
+)
+```
 
-**Thumbnail or Image Preview of a PDF or Office Document or Email file**
+For the simple GET route:
 
-    api_response = a2p_client.LibreOffice.thumbnail('https://www.api2pdf.com/wp-content/themes/api2pdf/assets/samples/sample-word-doc.docx')
+```python
+result = client.WkHtml.url_to_pdf("https://www.api2pdf.com", use_get=True)
+```
 
-**Convert HTML to Microsoft Word or Docx**
+## LibreOffice
 
-    api_response = a2p_client.LibreOffice.html_to_docx('http://www.api2pdf.com/wp-content/uploads/2021/01/sampleHtml.html')
+Use LibreOffice endpoints for file and Office conversions.
 
-**Convert HTML to Microsoft Excel or Xlsx**
+Convert a file URL to PDF:
 
-    api_response = a2p_client.LibreOffice.html_to_xlsx('http://www.api2pdf.com/wp-content/uploads/2021/01/sampleTables.html')
+```python
+result = client.LibreOffice.any_to_pdf(
+    "https://www.api2pdf.com/wp-content/themes/api2pdf/assets/samples/sample-word-doc.docx"
+)
+```
 
-**Convert PDF to HTML**
+Generate a thumbnail:
 
-    api_response = a2p_client.LibreOffice.pdf_to_html('http://www.api2pdf.com/wp-content/uploads/2021/01/1a082b03-2bd6-4703-989d-0443a88e3b0f-4.pdf')
-    
----
-    
-## <a name="merge"></a>PdfSharp - Merge / Concatenate Two or More PDFs, Add bookmarks to pdfs, add passwords to pdfs
+```python
+result = client.LibreOffice.thumbnail(
+    "https://www.api2pdf.com/wp-content/themes/api2pdf/assets/samples/sample-word-doc.docx"
+)
+```
 
-To use the merge endpoint, supply a list of urls to existing PDFs. The engine will consume all of the PDFs and merge them into a single PDF, in the order in which they were provided in the list.
+Convert HTML or a URL to DOCX or XLSX:
 
-**Merge PDFs from list of URLs to existing PDFs**
+```python
+docx = client.LibreOffice.html_to_docx(
+    html="<html><body><h1>Hello Word</h1></body></html>"
+)
 
-    links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
-    merge_result = a2p_client.PdfSharp.merge(links_to_pdfs)
+xlsx = client.LibreOffice.html_to_xlsx(
+    url="https://www.api2pdf.com/wp-content/uploads/2021/01/sampleTables.html"
+)
+```
 
-**Merge PDFs from list of URLs to existing PDFs (download PDF as a file and specify a file name)**
+## Markitdown
 
-    links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
-    merge_result = a2p_client.PdfSharp.merge(links_to_pdfs, inline=True, file_name='test.pdf')
+Convert a file URL to markdown:
 
-**Add bookmarks to existing PDF**
+```python
+result = client.Markitdown.convert_to_markdown("https://example.com/sample.docx")
+```
 
-    url = 'https://link-to-pdf'
-    bookmarks = [
-        { 'Page': 0, 'Title': 'Introduction' },
-        { 'Page': 1, 'Title': 'Second page' }
+## OpenDataLoader
+
+Extract structured content from a PDF URL:
+
+```python
+json_result = client.OpenDataLoader.pdf_to_json("https://example.com/sample.pdf")
+
+markdown_result = client.OpenDataLoader.pdf_to_markdown("https://example.com/sample.pdf")
+
+html_result = client.OpenDataLoader.pdf_to_html("https://example.com/sample.pdf")
+```
+
+## PdfSharp
+
+Merge PDFs:
+
+```python
+result = client.PdfSharp.merge(
+    [
+        "https://LINK-TO-PDF-1",
+        "https://LINK-TO-PDF-2",
     ]
-    response = a2p.PdfSharp.add_bookmarks(url, bookmarks)
-
-**Add password to existing PDF**
-
-    url = 'https://link-to-pdf'
-    password = 'hello'
-    response = a2p.PdfSharp.add_password(url, password)
-
-**Extract pages, or split an existing PDF**
-
-[More information here](https://www.api2pdf.com/extract-pages-out-of-a-pdf-with-rest-api/)
-
-    url = 'https://link-to-pdf'
-    start = 0
-    end = 2
-    response = a2p.PdfSharp.extract_pages(url, start, end)
-
----
-    
-## <a name="helpers"></a>Helper Methods
-
-**Api2PdfResponse: download_file()**
-
-On any `Api2PdfResponse` that succesfully generated a pdf, you can use the handy `download_file()` method to download the pdf to a file-like object which you can then save to your local cache. If the pdf generation was unsuccessful, it will throw a FileNotFoundException.
-
-```
-from api2pdf import Api2Pdf
-a2p_client = Api2Pdf('YOUR-API-KEY')
-    
-# merge pdfs
-links_to_pdfs = ['https://LINK-TO-PDF', 'https://LINK-TO-PDF']
-merge_result = a2p_client.PdfSharp.merge(links_to_pdfs)
-    
-pdf_as_file_object = merge_result.download_file()
+)
 ```
 
-**Delete a PDF on Command with delete(response_id)**
+Set a password:
 
-By default, Api2Pdf will automatically delete your PDFs after 24 hours. If you have higher security requirements and need to delete the PDFs at-will, you can do so by calling the `delete(response_id)` method on the Api2Pdf object where `response_id` parameter comes from the responseId attribute in the Api2PdfResponse result.
-
+```python
+result = client.PdfSharp.add_password(
+    "https://LINK-TO-PDF",
+    user_password="password",
+    owner_password="owner-password",
+)
 ```
-from api2pdf import Api2Pdf
-a2p_client = Api2Pdf('YOUR-API-KEY')
-    
-# generate a pdf
-api_response = a2p_client.Chrome.html_to_pdf('<p>Hello World</p>')
-response_id = api_response.result['ResponseId']
 
-# delete the pdf
-a2p_client.delete(response_id)
+Extract a page range:
+
+```python
+result = client.PdfSharp.extract_pages(
+    "https://LINK-TO-PDF",
+    start=0,
+    end=2,
+)
 ```
+
+## Zip
+
+Create a zip from multiple files:
+
+```python
+result = client.Zip.generate_zip(
+    [
+        {"url": "https://example.com/report.pdf", "fileName": "docs/report.pdf"},
+        {"url": "https://example.com/image.png", "fileName": "images/image.png"},
+    ],
+    output_binary=True,
+)
+
+zip_bytes = result.get_file_bytes()
+```
+
+## Zebra
+
+Generate a barcode or QR code:
+
+```python
+result = client.Zebra.generate_barcode(
+    "QR_CODE",
+    "https://www.api2pdf.com",
+    width=300,
+    height=300,
+    show_label=False,
+)
+```
+
+## Utilities
+
+Delete a generated file:
+
+```python
+result = client.Chrome.html_to_pdf("<p>Hello World</p>")
+client.Utilities.delete(result.result["ResponseId"])
+```
+
+Check API status or remaining balance:
+
+```python
+status = client.Utilities.status()
+balance = client.Utilities.balance()
+```
+
+Top-level shortcuts are also available:
+
+```python
+client.delete(result.result["ResponseId"])
+print(client.status())
+print(client.balance())
+```
+
+## Working With Files
+
+Save a generated file to disk:
+
+```python
+result = client.Chrome.html_to_pdf("<p>Hello World</p>")
+result.save_file("path-to-local-file.pdf")
+```
+
+Get bytes directly:
+
+```python
+result = client.Chrome.html_to_pdf(
+    "<p>Hello World</p>",
+    output_binary=True,
+)
+
+file_bytes = result.get_file_bytes()
+```
+
+## Development
+
+Install the project in editable mode with test dependencies:
+
+```bash
+python3 -m venv .venv
+./.venv/bin/pip install -e .[test]
+```
+
+Run the test suite:
+
+```bash
+./.venv/bin/python -m pytest
+```
+
+## Resources
+
+- [Api2Pdf documentation](https://v2.api2pdf.com)
+- [Api2Pdf FAQ](https://www.api2pdf.com/faq)
